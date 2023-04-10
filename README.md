@@ -1,16 +1,7 @@
-----------------------------------------------------------------------
-                          ntripserver
-----------------------------------------------------------------------
+
+# NTRIP Server
 
 (c) German Federal Agency for Cartography and Geodesy (BKG), 2002-2007
-
-
-Files in ntripserver.zip
-------------------------
-- makefile: preconfigured makefile for convenient installation
-- ntripserver.c: c source file
-- README: Readme file for the ntripserver program
-
 
 NTRIP
 -----
@@ -97,16 +88,17 @@ Usage
 -----
 The user may call the program with the following options:
 
+```bash
 -h|? print this help screen
 
 -E <ProxyHost>       Proxy server host name or address, required i.e. when
-        	     running the program in a proxy server protected LAN,
-        	     optional
+                     running the program in a proxy server protected LAN,
+                     optional
 -F <ProxyPort>       Proxy server IP port, required i.e. when running
-        	     the program in a proxy server protected LAN, optional
--R <maxDelay>	     Reconnect mechanism with maximum delay between reconnect
-        	     attemts in seconds, default: no reconnect activated,
-        	     optional
+                     the program in a proxy server protected LAN, optional
+-R <maxDelay>	      Reconnect mechanism with maximum delay between reconnect
+                     attemts in seconds, default: no reconnect activated,
+                     optional
 
 -M <InputMode> Sets the input mode (1 = Serial Port, 2 = IP server,
    3 = File, 4 = SISNeT Data Server, 5 = UDP server, 6 = NTRIP Caster),
@@ -114,47 +106,47 @@ The user may call the program with the following options:
 
    <InputMode> = 1 (Serial Port): (using 8-N-1 = data bits-parity-stop bits)
    -i <Device>       Serial input device, default: /dev/gps, mandatory if
-        	     <InputMode>=1
+                     <InputMode>=1
    -b <BaudRate>     Serial input baud rate, default: 19200 bps, mandatory
-        	     if <InputMode>=1
+                     if <InputMode>=1
    -f <InitFile>     Name of initialization file to be send to input device,
-        	     optional
+                     optional
 
    <InputMode> = 2|5 (IP port | UDP port):
    -H <ServerHost>   Input host name or address, default: 127.0.0.1,
-        	     mandatory if <InputMode> = 2|5
+                     mandatory if <InputMode> = 2|5
    -P <ServerPort>   Input port, default: 1025, mandatory if <InputMode>= 2|5
    -f <ServerFile>   Name of initialization file to be send to server,
-        	     optional
+                     optional
    -x <ServerUser>   User ID to access incoming stream, optional
    -y <ServerPass>   Password, to access incoming stream, optional
-   -B Bind to incoming UDP stream, optional for <InputMode> = 5
+   -B                Bind to incoming UDP stream, optional for <InputMode> = 5
 
    <InputMode> = 3 (File):
    -s <File>	     File name to simulate stream by reading data from (log)
-        	     file, default is /dev/stdin, mandatory for <InputMode> = 3
+                     file, default is /dev/stdin, mandatory for <InputMode> = 3
 
    <InputMode> = 4 (SISNeT Data Server):
    -H <SisnetHost>   SISNeT Data Server name or address,
-        	     default: 131.176.49.142, mandatory if <InputMode> = 4
+                     default: 131.176.49.142, mandatory if <InputMode> = 4
    -P <SisnetPort>   SISNeT Data Server port, default: 7777, mandatory if
-        	     <InputMode> = 4
+                     <InputMode> = 4
    -u <SisnetUser>   SISNeT Data Server user ID, mandatory if <InputMode> = 4
    -l <SisnetPass>   SISNeT Data Server password, mandatory if <InputMode> = 4
    -V <SisnetVers>   SISNeT Data Server Version number, options are 2.1, 3.0
-        	     or 3.1, default: 3.1, mandatory if <InputMode> = 4
+                     or 3.1, default: 3.1, mandatory if <InputMode> = 4
 
    <InputMode> = 6 (NTRIP Version 1.0 Caster):
    -H <SourceHost>   Source caster name or address, default: 127.0.0.1,
-        	     mandatory if <InputMode> = 6
+                     mandatory if <InputMode> = 6
    -P <SourcePort>   Source caster port, default: 2101, mandatory if
-        	     <InputMode> = 6
+                     <InputMode> = 6
    -D <SourceMount>  Source caster mountpoint for stream input, mandatory if
-        	     <InputMode> = 6
+                     <InputMode> = 6
    -U <SourceUser>   Source caster user Id for input stream access, mandatory
-        	     for protected streams if <InputMode> = 6
+                     for protected streams if <InputMode> = 6
    -W <SourcePass>   Source caster password for input stream access, mandatory
-        	     for protected streams if <InputMode> = 6
+                     for protected streams if <InputMode> = 6
 
 -O <OutputMode> Sets output mode for communatation with destination caster
    1 = http: NTRIP Version 2.0 Caster in TCP/IP mode
@@ -168,29 +160,32 @@ The user may call the program with the following options:
    further to mode ntrip1 if necessary.
 
    -a <DestHost>     Destination caster name or address, default: 127.0.0.1,
-        	     mandatory
+                     mandatory
    -p <DestPort>     Destination caster port, default: 2101, mandatory
    -m <DestMount>    Destination caster mountpoint for stream upload,
-        	     mandatory
+                     mandatory
    -n <DestUser>     Destination caster user ID for stream upload to
-        	     mountpoint, only for NTRIP Version 2.0 destination
-        	     casters, mandatory
+                     mountpoint, only for NTRIP Version 2.0 destination
+                     casters, mandatory
    -c <DestPass>     Destination caster password for stream upload to
-        	     mountpoint, mandatory
+                     mountpoint, mandatory
    -N <STR-record>   Sourcetable STR-record
-        	     optional for NTRIP Version 2.0 in RTSP/RTP and TCP/IP mode
-
+                     optional for NTRIP Version 2.0 in RTSP/RTP and TCP/IP mode
+```
 
 Example1: Reading from serial port and forward to NTRIP Version 1.0 Caster:
 
+```bash
 ./ntripserver -M 1 -i /dev/ttys0 -b 9600 -O 2 -a www.euref-ip.net -p 2101 -m Mount2 
               -n serverID -c serverPass
+```
 
 Example2: Reading from NTRIP Version 1.0 Caster and forward to NTRIP Version 2.0
 
+```bash
 ./ntripserver -M 6 -H www.euref-ip.net -P 2101 -D Mount1 -U clientID -W clientPass
               -O 1 -a www.goenet-ip.fi -p 2101 -m Mount2 -n serverID -c serverPass
-
+```
 
 NTRIP Caster password and mountpoint
 ------------------------------------
