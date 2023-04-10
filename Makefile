@@ -9,14 +9,16 @@ else
 OPTS = -Wall -W
 endif
 
+bin = ntripserver
+
 ntripserver: ntripserver.c
 	$(CC) $(OPTS) $? -O3 -DNDEBUG -o $@ $(LIBS)
 
 debug: ntripserver.c
-	$(CC) $(OPTS) $? -g -o ntripserver $(LIBS)
+	$(CC) $(OPTS) $? -g -o $(bin) $(LIBS)
 
 clean:
-	$(RM) -f ntripserver core
+	$(RM) -f $(bin)
 
-archive:
-	tar -cvzf ntripserver.tgz makefile ntripserver.c README startntripserver.sh
+install:
+	sudo cp -f $(bin) /usr/local/bin
