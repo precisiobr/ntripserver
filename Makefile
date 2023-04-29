@@ -6,7 +6,8 @@ CC   = gcc
 OPTS = -Wall -W -DWINDOWSVERSION
 LIBS = -lwsock32
 else
-OPTS = -Wall -W
+#OPTS = -Wall -W
+OPTS = -W
 endif
 
 bin = ntripserver
