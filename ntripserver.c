@@ -77,8 +77,6 @@ static char datestr[]     = "$Date: 2010/01/22 08:36:59 $";
 #define COMPILEDATE " built " __DATE__
 #endif
 
-#define ALARMTIME (2*60)
-
 #ifndef MSG_DONTWAIT
 #define MSG_DONTWAIT 0 /* prevent compiler errors */
 #endif
@@ -108,6 +106,8 @@ enum OUTMODE { HTTP = 1, RTSP = 2, NTRIP1 = 3, UDP = 4, END };
 
 #define RTP_VERSION     2
 #define TIME_RESOLUTION 125
+
+static int alarm_time_s = 120;
 
 static int ttybaud             = 19200;
 #ifndef WINDOWSVERSION
@@ -264,7 +264,7 @@ int main(int argc, char **argv)
   setup_signal_handler(SIGPIPE, handle_sigpipe);
   /* setup signal handler for timeout */
   setup_signal_handler(SIGALRM, handle_alarm);
-  alarm(ALARMTIME);
+  alarm(alarm_time_s);
 #else
   /* winsock initialization */
   WSADATA wsaData;
@@ -282,7 +282,7 @@ int main(int argc, char **argv)
     exit(1);
   }
   while((c = getopt(argc, argv,
-  "M:i:h:b:p:s:a:m:c:H:P:f:x:y:l:u:V:D:U:W:O:E:F:R:N:n:B")) != EOF)
+  "M:i:h:b:p:s:a:m:c:H:P:f:x:y:l:u:V:D:U:W:O:E:F:R:T:N:n:B")) != EOF)
   {
     switch (c)
     {
@@ -391,6 +391,10 @@ int main(int argc, char **argv)
       break;
     case 'R':  /* maximum delay between reconnect attempts in seconds */
        reconnect_sec_max = atoi(optarg);
+       break;
+    case 'T':  /* maximum alarm time in seconds */
+       alarm_time_s = atoi(optarg);
+       fprintf(stderr, "Alarm for no activity set to %d s\n", alarm_time_s);
        break;
     case 'O': /* OutputMode */
       outputmode = 0;
@@ -1421,7 +1425,7 @@ socklen_t length, unsigned int rtpssrc)
     if(!nodata)
     {
 #ifndef WINDOWSVERSION
-      alarm(ALARMTIME);
+      alarm(alarm_time_s);
 #else
       time(&nodata_begin);
 #endif
@@ -1431,10 +1435,10 @@ socklen_t length, unsigned int rtpssrc)
       nodata = 0;
 #ifdef WINDOWSVERSION
       time(&nodata_current);
-      if(difftime(nodata_current, nodata_begin) >= ALARMTIME)
+      if(difftime(nodata_current, nodata_begin) >= alarm_time_s)
       {
         sigalarm_received = 1;
-        fprintf(stderr, "ERROR: more than %d seconds no activity\n", ALARMTIME);
+        fprintf(stderr, "ERROR: more than %d seconds no activity\n", alarm_time_s);
       }
 #endif
     }
@@ -1903,7 +1907,8 @@ __attribute__ ((noreturn))
 #endif /* __GNUC__ */
 void usage(int rc, char *name)
 {
-  if(rc == 0) {
+  if(rc == 0)
+  {
     fprintf(stderr, "Version %s (%s) GPL" COMPILEDATE "\nUsage:\n%s [OPTIONS]\n",
       revisionstr, datestr, name);
     fprintf(stderr, "PURPOSE\n");
@@ -1927,7 +1932,8 @@ void usage(int rc, char *name)
     fprintf(stderr, "                         the program in a proxy server protected LAN, optional\n");
     fprintf(stderr, "    -R <maxDelay>        Reconnect mechanism with maximum delay between reconnect\n");
     fprintf(stderr, "                         attemts in seconds, default: no reconnect activated,\n");
-    fprintf(stderr, "                         optional\n\n");
+    fprintf(stderr, "                         optional\n");
+    fprintf(stderr, "    -T <seconds>         Maximum time in seconds with no activity. The default is 120 s.\n\n");
     fprintf(stderr, "    -M <InputMode> Sets the input mode (1 = Serial Port, 2 = IP server,\n");
     fprintf(stderr, "       3 = File, 4 = SISNeT Data Server, 5 = UDP server, 6 = NTRIP Caster),\n");
     fprintf(stderr, "       mandatory\n\n");
@@ -2020,7 +2026,7 @@ static void handle_alarm(int sig)
 #endif /* __GNUC__ */
 {
   sigalarm_received = 1;
-  fprintf(stderr, "ERROR: more than %d seconds no activity\n", ALARMTIME);
+  fprintf(stderr, "ERROR: more than %d seconds no activity\n", alarm_time_s);
 }
 
 #ifdef __GNUC__
