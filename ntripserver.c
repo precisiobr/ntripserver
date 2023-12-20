@@ -36,8 +36,8 @@
  */
 
 /* CVS revision and version */
-static char revisionstr[] = "$Revision: 1.51 $";
-static char datestr[]     = "$Date: 2010/01/22 08:36:59 $";
+static char revisionstr[] = "$Revision: 1.51-precisio $";
+static char datestr[]     = "$Date: 2023/12/20 10:26:00 $";
 
 #include <ctype.h>
 #include <errno.h>
@@ -450,7 +450,7 @@ int main(int argc, char **argv)
     fprintf(stderr,
     "WARNING: maximum delay between reconnect attemts changed from %d to 256 seconds\n"
     , reconnect_sec_max);
-    reconnect_sec_max = 256;
+    reconnect_sec_max = 1; // 256;
   }
 
   if(!mountpoint)
@@ -687,7 +687,7 @@ int main(int argc, char **argv)
             {
               fprintf(stderr, "ERROR: Source caster request too long\n");
               input_init = 0;
-              reconnect_sec_max =0;
+              reconnect_sec_max = 0;
               break;
             }
             nBufferBytes += encode(szSendBuffer+nBufferBytes,
@@ -697,7 +697,7 @@ int main(int argc, char **argv)
               fprintf(stderr,
               "ERROR: Source caster user ID and/or password too long\n");
               input_init = 0;
-              reconnect_sec_max =0;
+              reconnect_sec_max = 0;
               break;
             }
             szSendBuffer[nBufferBytes++] = '\r';
@@ -742,7 +742,7 @@ int main(int argc, char **argv)
                 fprintf(stderr, "\n");
                 if(!strstr(szSendBuffer, "SOURCETABLE 200 OK"))
                 {
-                  reconnect_sec_max =0;
+                  reconnect_sec_max = 0;
                 }
                 input_init = 0;
                 break;
@@ -1059,7 +1059,7 @@ int main(int argc, char **argv)
                 }
                 else
                 {
-                  reconnect_sec_max = 600;
+                  reconnect_sec_max = 2; // 600;
                   output_init = 0;
                 }
               }
